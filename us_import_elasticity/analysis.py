@@ -1,6 +1,4 @@
 """
-analysis_us_imports.py
----------------------------------------------------------------
 Tests whether higher US tariff rates reduced US monthly imports
 from the tariffed country (direct trade suppression effect).
  
@@ -14,7 +12,7 @@ Four main specifications:
   B1: No Lag   | With China
   B2: 1-Mo Lag | With China
  
-Each run on both tariff rate 
+Each specification is run as an OLS and WLS on the entire dataset and an OLS on the 50 largest exporters to the U.S. 
  
 Source data:
   - US Census Bureau monthly imports by country (USD millions)
@@ -155,7 +153,19 @@ print(f"  Tariff rate range: {panel['added_tariff_rate'].min():.2f}% "
       f"to {panel['added_tariff_rate'].max():.2f}%")
 print(f"  Log imports range: {panel['log_imports'].min():.2f} "
       f"to {panel['log_imports'].max():.2f}")
- 
+
+# Robustness weights: average monthly import value per country across full sample.
+# Used in WLS regressions to up-weight large trading partners.
+# We use the full-sample average (not a pre-tariff baseline) for simplicity;
+# the weight is fixed per country and does not vary with the tariff shocks.
+avg_imports_by_country = (
+    panel.groupby('cgdev_country')['imports_millions']
+    .mean()
+    .rename('avg_imports_weight')
+)
+panel = panel.merge(avg_imports_by_country.reset_index(),
+                    on='cgdev_country', how='left')
+
 # Diagnostic: within-variation after two-way demeaning (computed after subset creation below)
  
 # ── 6. SAMPLE SUBSETS ────────────────────────────────────────────────────────
@@ -171,7 +181,22 @@ print(f"  With China:    {panel_with_china['cgdev_country'].nunique()} countries
       f"{len(panel_with_china)} obs")
 print(f"  Without China: {panel_without_china['cgdev_country'].nunique()} countries, "
       f"{len(panel_without_china)} obs")
- 
+
+# Top-50 subset: restrict to the 50 largest exporters to the US by average monthly imports.
+# This guards against the result being driven by large % swings from tiny trading partners.
+top50_countries = avg_imports_by_country.nlargest(50).index.tolist()
+panel_top50_with_china    = panel[panel['cgdev_country'].isin(top50_countries)].copy()
+panel_top50_without_china = panel_top50_with_china[
+    panel_top50_with_china['cgdev_country'] != 'China'
+].copy()
+
+print(f"\n  Top-50 countries by average monthly imports:")
+print(f"  With China:    {panel_top50_with_china['cgdev_country'].nunique()} countries, "
+      f"{len(panel_top50_with_china)} obs")
+print(f"  Without China: {panel_top50_without_china['cgdev_country'].nunique()} countries, "
+      f"{len(panel_top50_without_china)} obs")
+print(f"  Countries: {', '.join(sorted(top50_countries))}")
+
 # China tariff path for reference
 china_tariff = (panel[panel['cgdev_country'] == 'China']
                 .sort_values('month')[['month', 'added_tariff_rate', 'imports_millions']]
@@ -192,21 +217,30 @@ for subset_label, sub in [('Without China', panel_without_china), ('With China',
  
 # ── 7. REGRESSION FUNCTION ───────────────────────────────────────────────────
  
-def run_panel_regression(df, iv_col, label):
+def run_panel_regression(df, iv_col, label, weights_col=None):
     """
     PanelOLS with country + time fixed effects.
     DV: log_imports | Independent Variable: iv_col
     Standard errors clustered at the country level.
+    weights_col: optional column name in df to use as observation weights (WLS).
     """
-    df_reg = df[['cgdev_country', 'month_int', 'log_imports', iv_col]].dropna().copy()
+    cols = ['cgdev_country', 'month_int', 'log_imports', iv_col]
+    if weights_col:
+        cols.append(weights_col)
+    df_reg = df[cols].dropna().copy()
     if len(df_reg) == 0:
         print(f"    {label}: No observations — skipping.")
         return None
     df_reg = df_reg.set_index(['cgdev_country', 'month_int'])
+    weights = None
+    if weights_col:
+        weights = df_reg[[weights_col]]
+        df_reg = df_reg.drop(columns=[weights_col])
     try:
         mod = PanelOLS.from_formula(
             f'log_imports ~ {iv_col} + EntityEffects + TimeEffects',
-            data=df_reg
+            data=df_reg,
+            weights=weights
         )
         return mod.fit(cov_type='clustered', cluster_entity=True)
     except Exception as e:
@@ -227,13 +261,31 @@ specs = [
     ('Tariff Rate | No Lag   | Without China', panel_without_china, 'added_tariff_rate'),
     ('Tariff Rate | 1-Mo Lag | Without China', panel_without_china, 'tariff_lag1'),
     ('Tariff Rate | No Lag   | With China',    panel_with_china,    'added_tariff_rate'),
-    ('Tariff Rate | 1-Mo Lag | With China',    panel_with_china,    'tariff_lag1')
+    ('Tariff Rate | 1-Mo Lag | With China',    panel_with_china,    'tariff_lag1'),
+
+    # ── ROBUSTNESS 1: WLS weighted by average monthly import value ──────────────
+    # Each observation is weighted by the country's average monthly imports over the
+    # full sample period, so large trading partners drive the coefficient estimate.
+    ('WLS (Avg Imports) | No Lag   | Without China', panel_without_china, 'added_tariff_rate', 'avg_imports_weight'),
+    ('WLS (Avg Imports) | 1-Mo Lag | Without China', panel_without_china, 'tariff_lag1',        'avg_imports_weight'),
+    ('WLS (Avg Imports) | No Lag   | With China',    panel_with_china,    'added_tariff_rate', 'avg_imports_weight'),
+    ('WLS (Avg Imports) | 1-Mo Lag | With China',    panel_with_china,    'tariff_lag1',        'avg_imports_weight'),
+
+    # ── ROBUSTNESS 2: Top-50 exporters to the US ────────────────────────────────
+    # Restricts the sample to the 50 largest exporters to the US by average monthly
+    # import value, directly excluding the small-country noise concern.
+    ('Top-50 Exporters | No Lag   | Without China', panel_top50_without_china, 'added_tariff_rate'),
+    ('Top-50 Exporters | 1-Mo Lag | Without China', panel_top50_without_china, 'tariff_lag1'),
+    ('Top-50 Exporters | No Lag   | With China',    panel_top50_with_china,    'added_tariff_rate'),
+    ('Top-50 Exporters | 1-Mo Lag | With China',    panel_top50_with_china,    'tariff_lag1'),
 ]
  
 results = {}
-for label, df, iv_col in specs:
+for spec in specs:
+    label, df, iv_col = spec[0], spec[1], spec[2]
+    weights_col = spec[3] if len(spec) > 3 else None
     print(f"  Running: {label}")
-    results[label] = (run_panel_regression(df, iv_col, label), iv_col)
+    results[label] = (run_panel_regression(df, iv_col, label, weights_col=weights_col), iv_col)
  
 # ── 9. RESULTS TABLE ─────────────────────────────────────────────────────────
  
@@ -262,12 +314,26 @@ print("\n" + "=" * 60)
 print("RESULTS SUMMARY")
 print("=" * 60)
  
-tariff_specs   = [s[0] for s in specs if s[0].startswith('Tariff Rate')]
- 
+tariff_specs = [s[0] for s in specs if s[0].startswith('Tariff Rate')]
+wls_specs    = [s[0] for s in specs if s[0].startswith('WLS')]
+top50_specs  = [s[0] for s in specs if s[0].startswith('Top-50')]
+
 print_results_block(
-    "Independent Variable: Added effective tariff rate\n"
+    "Baseline: Added effective tariff rate (all countries)\n"
     "  Semi-log: β = % change in US imports per 1 pp increase in tariff rate",
     tariff_specs
+)
+
+print_results_block(
+    "Robustness 1: WLS weighted by average monthly import value\n"
+    "  Up-weights large trading partners; weight = country avg monthly imports over full sample",
+    wls_specs
+)
+
+print_results_block(
+    "Robustness 2: Top-50 exporters to the US (by avg monthly imports)\n"
+    "  Excludes small-country noise by restricting to economically significant partners",
+    top50_specs
 )
  
 print(f"""
