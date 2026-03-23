@@ -4,6 +4,7 @@
 Tanmay Bothra
  
 **How much did US imports fall in response to the 2025 tariff wave?**
+
 An empirical panel OLS investigation using monthly Census Bureau trade data and the Center for Global Development tariff tracker.
  
 ---
