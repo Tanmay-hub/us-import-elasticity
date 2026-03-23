@@ -16,7 +16,7 @@ Beginning on April 2, 2025 ("Liberation Day"), the Trump administration imposed 
 This project estimates the **import demand elasticity** with respect to the added effective tariff rate: how much did a one-percentage-point increase in the tariff rate reduce US monthly imports from a given country? The answer has several critical economic implications:
  
 - **Fiscal revenue vs. trade suppression tradeoff:** Tariffs have been cited by proponents as a welcome revenue-generator, but they only generate revenue if US imports continue. High elasticity means imports collapse and revenue falls short of projections.
-- **Inflation pass-through.** If imports fall substantially, domestic producers face less competition and prices rise. If imports are inelastic, the tariff functions more like a tax on US consumers.
+- **Inflation pass-through:** If imports fall substantially, domestic producers face less competition and prices rise. If imports are inelastic, the tariff functions more like a tax on US consumers.
 - **Global supply chain reorientation:** Countries whose exports to the US are highly elastic and therefore fall sharply may face strong incentives to strengthen trade ties with China and other partners, with long-run implications for US economic leverage.
 - **Domestic Supply chain disruption:** US Tariffs on manufacturing inputs may increase costs for American manufacturers that compound across production stages.
  
