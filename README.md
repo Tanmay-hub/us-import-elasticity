@@ -87,7 +87,7 @@ where:
  
 Because the dependent variable is logged and the independent variable is in levels (percentage points), $\beta_1$ has a **semi-elasticity** interpretation:
  
-$$\beta_1 \approx \frac{\Delta \log(\text{Imports})}{\Delta \text{TariffRate}} \approx \% \text{ change in imports per 1 pp increase in tariff rate}$$
+$$\beta_1 \approx \frac{\Delta \log(\text{Imports})}{\Delta \text{TariffRate}} \approx \text{percentage change in monthly imports for a 1 percentage-point increase in the tariff rate}$$
  
 ### Identification
  
