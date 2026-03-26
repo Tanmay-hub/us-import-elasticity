@@ -84,7 +84,7 @@ The primary model is a semi-log panel OLS with two-way fixed effects
 
 $$\log(\text{Imports}_{it}) = \alpha_i + \gamma_t + \beta_1 \cdot \text{TariffRate}_{it} + \varepsilon_{it}$$
 
-*Equation 1: Regressing the log of imports from country i in month t on the ETR facing i during t*
+*Equation 1: Regressing the log of imports from country i in month t on the Added ETR facing i during t*
 
 where:
 
@@ -98,15 +98,15 @@ The country and time fixed effects remove all cross-sectional variation, and ide
 
 Equation 1, as a no-lag specification, is theoretically primary as Liberation Day tariffs were announced and implemented with near-zero notice and gave importers no opportunity to front-run the change. The one-month lagged specification in Equation 2 below is included as a robustness check to capture any goods already in transit that could not adjust within the same month. Front-running and transit-goods inertia are distinct concerns as the former inflates the April baseline specifically for China, while the latter motivates the lag spec as a check on whether any part of the import response operates through shipments that had already cleared the border before tariffs took effect.
 
-$$\log(\text{Imports}_{it}) = \alpha_i + \gamma_t + \beta_1 \cdot \text{TariffRate}_{it-1} + \varepsilon_{it}$$
+$$\log(\text{Imports}_{it}) = \alpha_i + \gamma_t + \beta_1 \cdot \text{TariffRate}_{i[t-1]} + \varepsilon_{it}$$
 
-*Equation 2: Regressing the log of imports from country i in month t on the ETR facing i during t - 1*
+*Equation 2: Regressing the log of imports from country i in month t on the Added ETR facing i during t - 1*
 
 ### Interpretation
 
 Because the dependent variable is logged and the independent variable is in levels (percentage points), $\beta_1$ has the following interpretation:
 
-$$\beta_1 \approx \frac{\Delta\log(\text{Imports})}{\Delta\text{TariffRate}} \approx \text{percentage change in monthly imports for a 1 percentage-point increase in the ETR}$$
+$$\beta_1 \approx \frac{\Delta\log(\text{Imports})}{\Delta\text{TariffRate}} \approx \text{percentage change in monthly imports for a 1 percentage-point increase in the Added ETR}$$
 
 ## Results
 
