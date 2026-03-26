@@ -72,7 +72,7 @@ The extreme variation in China's tariff path necessitates modeling a dataset tha
 
 Table 2: China's tariff path and monthly imports
 
-April's high import figure amidst the ~111% effective tariff rate that took effect on liberation day likely partly reflects pre-tariff front-running - orders placed before April 2 clearing customs during the month. This concern is more specific to China because actions such as ending the de minimis exemption for Chinese goods in February and imposing a 20% tariff on Chinese goods in March of 2025 had widely raised expectations of much higher tariffs on Chinese imports in a way that did not apply to other countries. The universal baseline 10% tariff on all other countries came as a greater shock to markets than higher tariffs on China.
+April's high import figure amidst the ~111% effective tariff rate that was added on liberation day likely partly reflects pre-tariff front-running - orders placed before April 2 clearing customs during the month. This concern is more specific to China because actions such as ending the de minimis exemption for Chinese goods in February and imposing a 20% tariff on Chinese goods in March of 2025 had widely raised expectations of much higher tariffs on Chinese imports in a way that did not apply to other countries. The universal baseline 10% tariff on all other countries came as a greater shock to markets than higher tariffs on China.
 
 The "With China" specifications should therefore be interpreted with caution throughout.
 
