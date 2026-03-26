@@ -4,7 +4,7 @@
 
 **How much did US imports from a country decline in response to increased tariffs on that country's exports?**
 
-An empirical panel OLS and WLS investigation using monthly Census Bureau trade data and the Center for Global Development tariff tracker.
+A Two Way Fixed Effects panel OLS and WLS investigation using monthly Census Bureau trade data and the Center for Global Development tariff tracker.
 
 ## Introduction
 
