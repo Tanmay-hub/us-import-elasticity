@@ -47,6 +47,8 @@ Six tariff snapshots are used:
 | `nov6`  | November 6, 2025 | November 2025 |
 | `nov21` | November 21, 2025 | December 2025 – February 2026 |
 
+*Note: July 2025 ETR is from the June 2025 snapshot, and Nov 2025 ETR is from the Nov 6 snapshot because these snapshots were in effect for most of the month.*
+
 Table 1: Added ETR calculation date and month assignment
 
 Each month is assigned the snapshot whose rate was in effect for the majority of that month, following the principle that import flows reflect conditions under the prevailing tariff regime. June and July are both governed by the `june4` snapshot because CGDev's `july12` snapshot had to do with tariff changes set to take effect in August, which ended up being mostly governed by the `aug7` snapshot. By the same reasoning, `nov6` governs November rather than `nov21`. And `nov21` governs December 2025 and January 2026 because the next tariff snapshot provided by CGDev is as of February 23 2026.
@@ -68,8 +70,6 @@ The extreme variation in China's tariff path necessitates modeling a dataset tha
 | Dec 2025 | Nov 21 | 24.01 | 21,104 |
 | Jan 2026 | Nov 21 | 24.01 | 21,058 |
 | Feb 2026 | Nov 21 | 24.01 | 18,956 |
-
-*Note: July 2025 ETR is from the June 2025 snapshot, and Nov 2025 ETR is from the Nov 6 snapshot because these snapshots were in effect for most of the month.*
 
 Table 2: China's tariff path and monthly imports
 
