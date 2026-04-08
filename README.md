@@ -20,13 +20,13 @@ This paper estimates the import demand elasticity with respect to the added effe
 
 **Domestic Supply chain disruption**: US Tariffs on manufacturing inputs may increase costs for American manufacturers that compound across production stages.
 
-This analysis constructs an econometrically valid Two Way Fixed Effects panel regression for estimating that elasticity. The current data - covering April 2025 through January 2026 - does not yet show a discernible import response among major trading partners, but the model is well-positioned to produce precise estimates as 2026 import data becomes available, particularly once tariff variation following the February 2026 SCOTUS IEEPA ruling can be tested.
+This analysis constructs an econometrically valid Two Way Fixed Effects panel regression for estimating that elasticity. The current data - covering April 2025 through February 2026 - does not yet show a discernible import response among major trading partners, but the model is well-positioned to produce precise estimates as 2026 import data becomes available, particularly once tariff variation following SCOTUS's late February 2026 IEEPA ruling can be tested.
 
 ## Data
 
 1\) US Import Data - [Census Bureau](https://www.census.gov/foreign-trade/statistics/country/index.html)
 
-Monthly US import values (USD millions, CIF basis) by country of origin, covering April 2025 through January 2026.
+Monthly US import values (USD millions, CIF basis) by country of origin, covering April 2025 through February 2026.
 
 The raw file includes aggregate rows (World totals, regional aggregates, USMCA groupings) which are dropped prior to analysis. Country names are harmonized to match the CGDev naming convention (e.g. "Burma" becomes "Myanmar", and "Korea, South" becomes "South Korea"). Hong Kong and Macau are excluded because they receive separate tariff treatment not captured in the CGDev tracker.
 
@@ -45,13 +45,13 @@ Six tariff snapshots are used:
 | `june4` | June 4, 2025 | June–July 2025 |
 | `aug7`  | August 7, 2025 | August–October 2025 |
 | `nov6`  | November 6, 2025 | November 2025 |
-| `nov21` | November 21, 2025 | December 2025–January 2026 |
+| `nov21` | November 21, 2025 | December 2025 – February 2026 |
 
 Table 1: Added ETR calculation date and month assignment
 
 Each month is assigned the snapshot whose rate was in effect for the majority of that month, following the principle that import flows reflect conditions under the prevailing tariff regime. June and July are both governed by the `june4` snapshot because CGDev's `july12` snapshot had to do with tariff changes set to take effect in August, which ended up being mostly governed by the `aug7` snapshot. By the same reasoning, `nov6` governs November rather than `nov21`. And `nov21` governs December 2025 and January 2026 because the next tariff snapshot provided by CGDev is as of February 23 2026.
 
-**Sample coverage**: 186 countries (without China) or 187 countries (with China), 10 months (April 2025 – January 2026), yielding approximately 1,800 observations per specification. Nine countries are excluded via `dropna()` in the regression because they lack CGDev tariff data, primarily due to pre-existing sanctions regimes unrelated to the 2025 tariff wave.
+**Sample coverage**: 186 countries (without China) or 187 countries (with China), 10 months (April 2025 – February 2026), yielding approximately 1,800 observations per specification. Nine countries are excluded via `dropna()` in the regression because they lack CGDev tariff data, primarily due to pre-existing sanctions regimes unrelated to the 2025 tariff wave.
 
 The extreme variation in China's tariff path necessitates modeling a dataset that excludes imports from the country. The wide range of tariffs applied to Chinese imports coupled with the large volume of those imports means that a model which includes China in the dataset would largely capture changes in US-China trade rather than a more universally applicable tariff elasticity - China's unique status as the world's second-largest economy, largest trading partner to most countries, and one of America's largest trading partners means that its ability to retaliate against US tariffs or divert exports from the US to other countries cannot easily be replicated by other countries.
 
@@ -67,8 +67,9 @@ The extreme variation in China's tariff path necessitates modeling a dataset tha
 | Nov 2025 | Nov 6 | 24.13 | 20,951 |
 | Dec 2025 | Nov 21 | 24.01 | 21,104 |
 | Jan 2026 | Nov 21 | 24.01 | 21,058 |
+| Feb 2026 | Nov 21 | 24.01 | 18,956 |
 
-*Note: Nov 2025 ETR is from the Nov 6 snapshot (in effect for most of the month).*
+*Note: July 2025 ETR is from the June 2025 snapshot, and Nov 2025 ETR is from the Nov 6 snapshot because these snapshots were in effect for most of the month.*
 
 Table 2: China's tariff path and monthly imports
 
@@ -116,10 +117,10 @@ Semi-log: β = % change in US imports per 1 pp increase in tariff rate
 
 Specification                           β₁      t-stat   p-value    N    R²(within)
 -------------------------------------------------------------------------------------
-No Lag   | Without China            -0.0269***   -3.43    0.0006   1788     0.0098
-1-Mo Lag | Without China            -0.0221**    -3.12    0.0019   1608     0.0037
-No Lag   | With China               -0.0170*     -2.00    0.0458   1798     0.0066
-1-Mo Lag | With China               -0.0141*     -2.16    0.0309   1617     0.0027
+No Lag   | Without China            -0.0276**    -3.19    0.0014   1968     0.0126
+1-Mo Lag | Without China            -0.0229**    -2.80    0.0052   1788     0.0070
+No Lag   | With China               -0.0186*     -2.10    0.0361   1979     0.0088
+1-Mo Lag | With China               -0.0158*     -2.20    0.0280   1798     0.0051
 
 Significance: *** p<0.001  ** p<0.01  * p<0.05  . p<0.10
 All regressions: country + time fixed effects, SEs clustered at country level.
@@ -127,7 +128,7 @@ All regressions: country + time fixed effects, SEs clustered at country level.
 
 Table 3: Baseline OLS regression results
 
-The full-sample baseline yields β₁ = −0.0269 (p < 0.001) in the preferred no-lag specification, statistically significant and consistent in sign across lag structures, though the 1-Mo Lag coefficient is somewhat smaller in magnitude (−0.0221). The within-R² of roughly 1% is a warning sign that tariff variation is explaining very little of the total variance in import growth even where the coefficient is significant, and the robustness checks demonstrate why.
+The full-sample baseline yields β₁ = −0.0276 (p < 0.01) in the preferred no-lag specification, and the value of β₁ is statistically significant and consistent in sign across lag structures, though the 1-Mo Lag coefficient is somewhat smaller in magnitude (−0.0229). The within-R² of roughly 1% is a warning sign that tariff variation is explaining very little of the total variance in import growth despite the statistically significant coefficient, and the robustness checks demonstrate why.
 
 ```
 Robustness 1: WLS weighted by average monthly import value
@@ -135,33 +136,31 @@ Robustness 1: WLS weighted by average monthly import value
 
 Specification                           β₁      t-stat   p-value    N    R²(within)
 -------------------------------------------------------------------------------------
-No Lag   | Without China            -0.0010      -0.25    0.8023   1788     0.0011
-1-Mo Lag | Without China            +0.0028      +0.73    0.4680   1608     0.0012
-No Lag   | With China               +0.0016*     +2.14    0.0326   1798     0.0031
-1-Mo Lag | With China               -0.0008.     -1.66    0.0979   1617     0.0005
+No Lag   | Without China            -0.0024      -0.65    0.5128   1968     0.0047
+1-Mo Lag | Without China            +0.0002      +0.06    0.9522   1788    -0.0001
+No Lag   | With China               +0.0016      +1.82    0.0687   1979     0.0022
+1-Mo Lag | With China               -0.0007      -1.60    0.1095   1798     0.0007
 
 Robustness 2: Top-50 exporters to the US (by avg monthly imports)
 (Restricts sample to economically significant trading partners)
 
 Specification                           β₁      t-stat   p-value    N    R²(within)
 -------------------------------------------------------------------------------------
-No Lag   | Without China            -0.0039      -0.93    0.3537    491     0.0092
-1-Mo Lag | Without China            -0.0016      -0.41    0.6807    442     0.0004
-No Lag   | With China               -0.0003      -0.15    0.8808    501     0.0005
-1-Mo Lag | With China               -0.0013      -1.43    0.1543    451     0.0006
+No Lag   | Without China            -0.0037     -0.94    0.3493    540      0.0127
+1-Mo Lag | Without China            -0.0017     -0.50    0.6173    491      0.0029
+No Lag   | With China               -0.0002     -0.14    0.8924    551      0.0007
+1-Mo Lag | With China               -0.0012     -1.34    0.1819    501      0.0022
 ```
 
 Table 4: Robustness checks with a WLS model weighted by import value and an OLS regression on the top-50 exporters to the U.S
 
-Both robustness checks produce statistically insignificant coefficients of much smaller magnitudes for large trading partners. The WLS without-China estimate collapses from −0.0269 to essentially zero (−0.0010, p = 0.80), and the Top-50 without-China estimate is similarly flat (−0.0039, p = 0.35). This pattern across two independent approaches indicates that the baseline result is driven by small and volatile trading partners such that a small absolute change in imports translates to a large percentage swing rather than by the economically significant bilateral relationships that dominate US trade.
+Both robustness checks produce statistically insignificant coefficients of much smaller magnitudes for large trading partners. The WLS without-China estimate collapses by more than a factor of 10 from −0.0276 to −0.0024 with a p-value of ~0.51, and the Top-50 without-China estimate is similarly flat (−0.0037, p = ~0.35). This pattern across two independent approaches indicates that the baseline result is driven by small and volatile trading partners such that a small absolute change in imports translates to a large percentage swing rather than by the economically significant bilateral relationships that dominate US trade.
 
-The robustness checks include a surprisingly statistically significant result, namely the +0.0016* coefficient in the no-lag WLS regression on a dataset including China. This statistically significant positive coefficient, which implies greater imports when tariffs rise, is likely an artifact of the previously described April 2025 front-running problem interacting with China's dominant weight in the WLS sample. China's within-country variation pairs April's higher imports and extraordinarily high ETR of around 111% (see Table #1) with the lower tariffs and lower imports of subsequent months to create a spurious positive correlation between tariffs and import levels when China is heavily weighted. The 1-Mo Lag WLS with China being negative and marginally significant (−0.0008, p = 0.098) is consistent with this interpretation as the lag partially decouples the front-running April baseline from the tariff value and corrects the sign.
-
-**Effect of including China:** China's addition the baseline no-lag reduces the estimated coefficient from −0.0269 to −0.0170, which shows that China's enormous tariff swing (from 111.8% in April to ~30% during later months) is accompanied by a smaller-than-expected import decline and is consistent with front-running inflating the April baseline. The without-China result is more representative of the universal tariff effect on the general population of trading partners.
+**Effect of including China:** China's addition the baseline no-lag reduces the estimated coefficient from −0.0276 to −0.0186, which shows that China's enormous tariff swing (from 111.8% in April to ~30% during later months) is accompanied by a smaller-than-expected import decline and is consistent with front-running inflating the April baseline. The without-China result is more representative of the universal tariff effect on the general population of trading partners.
 
 ## Conclusion
 
-The 2025 tariff wave, as measured from April 2025 to January 2026, does not produce a statistically detectable import reduction among major US trading partners. The full-sample negative result appears to be a statistical artifact of small-country noise rather than large-scale export diversion by economically significant partners. This does not mean tariffs have had no effect but rather that the current 10-month window, which is dominated by a single large tariff shock with limited subsequent variation, does not yet provide sufficient identifying variation to precisely estimate the elasticity for large partners. The model is well-positioned to test that elasticity as richer variation from 2026 becomes available, particularly following tariff changes from SCOTUS's February 2026 ruling on the IEEPA's invalidity as grounds for a U.S President to impose tariffs.
+The 2025 tariff wave, as measured from April 2025 to February 2026, does not produce a statistically detectable import reduction among major US trading partners. The full-sample negative result appears to be a statistical artifact of small-country noise rather than large-scale export diversion by economically significant partners. This does not mean tariffs have had no effect but rather that the current 10-month window, which is dominated by a single large tariff shock with limited subsequent variation, does not yet provide sufficient identifying variation to precisely estimate the elasticity for large partners. The model is well-positioned to test that elasticity as richer variation from 2026 becomes available, particularly following tariff changes from SCOTUS's February 2026 ruling on the IEEPA's invalidity as grounds for a U.S President to impose tariffs.
 
 ## Limitations and Next Steps
 
