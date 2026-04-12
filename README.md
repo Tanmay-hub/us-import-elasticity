@@ -51,7 +51,7 @@ Six tariff snapshots are used:
 
 Table 1: Added ETR calculation date and month assignment
 
-Each month is assigned the snapshot whose rate was in effect for the majority of that month, following the principle that import flows reflect conditions under the prevailing tariff regime. June and July are both governed by the `june4` snapshot because CGDev's `july12` snapshot had to do with tariff changes set to take effect in August, which ended up being mostly governed by the `aug7` snapshot. By the same reasoning, `nov6` governs November rather than `nov21`. And `nov21` governs December 2025 and January 2026 because the next tariff snapshot provided by CGDev is as of February 23 2026.
+Each month is assigned the snapshot whose rate was in effect for the majority of that month, following the principle that import flows reflect conditions under the prevailing tariff regime. June and July are both governed by the `june4` snapshot because CGDev's `july12` snapshot had to do with tariff changes set to take effect in August, which ended up being mostly governed by the `aug7` snapshot. By the same reasoning, `nov6` governs November rather than `nov21`. And `nov21` governs December 2025 through February 2026 because the next tariff snapshot provided by CGDev is as of February 23 2026.
 
 **Sample coverage**: 186 countries (without China) or 187 countries (with China), 10 months (April 2025 – February 2026), yielding approximately 1,800 observations per specification. Nine countries are excluded via `dropna()` in the regression because they lack CGDev tariff data, primarily due to pre-existing sanctions regimes unrelated to the 2025 tariff wave.
 
